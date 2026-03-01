@@ -1,0 +1,51 @@
+{
+  "name": "@borealise/api",
+  "version": "1.0.0",
+  "description": "Official API client for Borealise",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "borealise",
+    "api",
+    "client",
+    "music",
+    "rooms"
+  ],
+  "author": "Borealise",
+  "license": "MIT",
+  "homepage": "https://borealise.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/borealise/api-client"
+  },
+  "bugs": {
+    "url": "https://github.com/borealise/api-client/issues"
+  },
+  "peerDependencies": {
+    "axios": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "axios": "^1.6.0"
+  }
+}
