@@ -100,6 +100,7 @@ export interface BoothDJ {
   userId: number
   username: string
   displayName: string | null
+  avatarId: string
   role: RoomRole
 }
 
