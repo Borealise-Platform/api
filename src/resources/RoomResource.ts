@@ -32,6 +32,8 @@ export interface RoomMember {
     id: number
     username: string
     displayName: string | null
+    avatarId: string
+    level: number
   }
 }
 
@@ -87,6 +89,8 @@ export interface RoomUserState {
   userId: number
   username: string
   displayName: string | null
+  avatarId: string
+  level: number
   role: RoomRole
   joinedAt: number
 }

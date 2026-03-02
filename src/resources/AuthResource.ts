@@ -5,8 +5,11 @@ export interface AuthUser {
   email?: string
   username: string
   displayName: string | null
+  avatarId: string
   bio: string | null
   globalRole: string
+  xp: number
+  level: number
   flags?: number
   subscriptionType?: string
   subscriptionExpiresAt?: string | null
