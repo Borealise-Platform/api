@@ -92,6 +92,8 @@ export interface RoomUserState {
   avatarId: string
   level: number
   xp: number
+  bio: string | null
+  globalRole: string
   role: RoomRole
   joinedAt: number
 }
