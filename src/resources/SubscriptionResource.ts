@@ -10,9 +10,12 @@ export interface SubscriptionStatus {
   currentPeriodEnd: string | null
 }
 
-export interface CheckoutResponse {
+export interface CreateIntentResponse {
   success: boolean
-  data: { url: string }
+  data: {
+    subscriptionId: string
+    clientSecret: string
+  }
 }
 
 export interface PortalResponse {
@@ -28,9 +31,11 @@ export class SubscriptionResource extends ApiResource {
     return this.api.get<{ success: boolean; data: SubscriptionStatus }>(`${this.endpoint}/status`)
   }
 
-  // POST /api/subscriptions/checkout
-  public async createCheckout(plan: SubscriptionPlan) {
-    return this.api.post<CheckoutResponse>(`${this.endpoint}/checkout`, { plan })
+  // POST /api/subscriptions/create-intent
+  // Creates an incomplete subscription and returns a PaymentIntent client_secret
+  // for use with the Stripe Payment Element
+  public async createIntent(plan: SubscriptionPlan) {
+    return this.api.post<CreateIntentResponse>(`${this.endpoint}/create-intent`, { plan })
   }
 
   // POST /api/subscriptions/portal
