@@ -105,6 +105,9 @@ export interface BoothDJ {
   displayName: string | null
   avatarId: string
   role: RoomRole
+  level?: number
+  xp?: number
+  globalRole?: string
 }
 
 export interface BoothMedia {
