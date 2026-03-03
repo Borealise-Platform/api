@@ -8,6 +8,8 @@ export interface UpdateProfileData {
   bio?: string
 }
 
+export type GlobalRole = 'user' | 'moderator' | 'admin' | 'owner'
+
 export interface UserResponse {
   success: boolean
   data: {
@@ -36,6 +38,20 @@ export class UserResource extends ApiResource<User> {
   // DELETE /api/users/me
   public async deleteAccount() {
     return this.api.delete<{ success: boolean; message: string }>(`${this.endpoint}/me`)
+  }
+
+  // ============================================
+  // Admin methods
+  // ============================================
+
+  // PATCH /api/admin/users/:id/role
+  public async updateRole(id: number, role: GlobalRole) {
+    return this.api.patch<UserResponse>(`/api/admin/users/${id}/role`, { role })
+  }
+
+  // POST /api/admin/users/:id/disable
+  public async disable(id: number) {
+    return this.api.post<{ success: boolean; data: null }>(`/api/admin/users/${id}/disable`)
   }
 }
 

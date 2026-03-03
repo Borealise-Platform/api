@@ -94,8 +94,53 @@ export interface RoomUserState {
   xp: number
   bio: string | null
   globalRole: string
+  flags?: number | null
   role: RoomRole
+  subscriptionType?: string | null
+  subscriptionMonths?: number
   joinedAt: number
+}
+
+export interface RoomBan {
+  id: number
+  userId: number
+  modById: number
+  reason: string | null
+  duration: number | null
+  expiresAt: string | null
+  createdAt: string
+  username: string
+  displayName: string | null
+}
+
+export interface RoomBansResponse {
+  success: boolean
+  data: {
+    bans: RoomBan[]
+  }
+}
+
+export interface ModerateUserData {
+  reason?: string
+  duration?: number
+}
+
+export interface BanResponse {
+  success: boolean
+  data: {
+    userId: number
+    bannedUntil: string | null
+    permanent: boolean
+  }
+}
+
+export interface MuteResponse {
+  success: boolean
+  data: {
+    userId: number
+    mutedUntil: string | undefined
+    duration: number
+  }
 }
 
 // Booth/DJ types
@@ -225,14 +270,52 @@ export class RoomResource extends ApiResource<Room> {
     return this.get<RoomStaffResponse>(`${slug}/staff`)
   }
 
-  // PUT /api/rooms/:slug/staff/:userId - Update staff role
-  public async updateStaffRole(slug: string, userId: number, role: RoomRole) {
-    return this.api.put<{ success: boolean }>(`${this.endpoint}/${slug}/staff/${userId}`, { role })
+  // ============================================
+  // Moderation methods
+  // ============================================
+
+  // GET /api/rooms/:slug/bans
+  public async getBans(slug: string) {
+    return this.get<RoomBansResponse>(`${slug}/bans`)
   }
 
-  // DELETE /api/rooms/:slug/staff/:userId - Remove staff
-  public async removeStaff(slug: string, userId: number) {
-    return this.api.delete<{ success: boolean }>(`${this.endpoint}/${slug}/staff/${userId}`)
+  // PATCH /api/rooms/:slug/users/:userId/role
+  public async updateUserRole(slug: string, userId: number, role: RoomRole) {
+    return this.api.patch<{ success: boolean; data: { userId: number; role: RoomRole } }>(
+      `${this.endpoint}/${slug}/users/${userId}/role`,
+      { role },
+    )
+  }
+
+  // POST /api/rooms/:slug/users/:userId/ban
+  public async ban(slug: string, userId: number, data?: ModerateUserData) {
+    return this.api.post<BanResponse>(`${this.endpoint}/${slug}/users/${userId}/ban`, data || {})
+  }
+
+  // DELETE /api/rooms/:slug/users/:userId/ban
+  public async unban(slug: string, userId: number) {
+    return this.api.delete<{ success: boolean; data: { userId: number } }>(
+      `${this.endpoint}/${slug}/users/${userId}/ban`,
+    )
+  }
+
+  // POST /api/rooms/:slug/users/:userId/mute
+  public async mute(slug: string, userId: number, data?: ModerateUserData) {
+    return this.api.post<MuteResponse>(`${this.endpoint}/${slug}/users/${userId}/mute`, data || {})
+  }
+
+  // DELETE /api/rooms/:slug/users/:userId/mute
+  public async unmute(slug: string, userId: number) {
+    return this.api.delete<{ success: boolean; data: { userId: number } }>(
+      `${this.endpoint}/${slug}/users/${userId}/mute`,
+    )
+  }
+
+  // POST /api/rooms/:slug/users/:userId/kick
+  public async kick(slug: string, userId: number) {
+    return this.api.post<{ success: boolean; data: { userId: number } }>(
+      `${this.endpoint}/${slug}/users/${userId}/kick`,
+    )
   }
 
   // POST /api/rooms/:slug/join - Join a room (session-based)
@@ -298,14 +381,14 @@ export class RoomResource extends ApiResource<Room> {
     return this.post<{ success: boolean; data?: { stayedInBooth: boolean } }>(`${slug}/booth/skip`, options || {})
   }
 
-  // POST /api/rooms/:slug/vote
+  // POST /api/rooms/:slug/booth/vote
   public async vote(slug: string, type: 'woot' | 'meh') {
-    return this.post<VoteResponse>(`${slug}/vote`, { type })
+    return this.post<VoteResponse>(`${slug}/booth/vote`, { type })
   }
 
-  // POST /api/rooms/:slug/grab
+  // POST /api/rooms/:slug/booth/grab
   public async grabTrack(slug: string, playlistId?: number) {
-    return this.post<GrabResponse>(`${slug}/grab`, playlistId ? { playlistId } : {})
+    return this.post<GrabResponse>(`${slug}/booth/grab`, playlistId ? { playlistId } : {})
   }
 }
 

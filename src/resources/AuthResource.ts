@@ -10,8 +10,9 @@ export interface AuthUser {
   globalRole: string
   xp: number
   level: number
-  flags?: number
-  subscriptionType?: string
+  flags?: number | null
+  subscriptionType?: string | null
+  subscriptionMonths?: number
   subscriptionExpiresAt?: string | null
   emailVerified?: boolean
   createdAt?: string

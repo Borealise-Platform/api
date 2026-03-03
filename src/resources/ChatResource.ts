@@ -3,10 +3,10 @@ import type { RoomRole } from './RoomResource'
 
 export interface ChatMessage {
   id: string
-  roomId: number
-  userId: number
+  room_id: number
+  user_id: number
   username: string
-  displayName: string | null
+  display_name: string | null
   role: RoomRole
   content: string
   timestamp: number
@@ -50,7 +50,7 @@ export class ChatResource extends ApiResource<ChatMessage> {
 
   // DELETE /api/rooms/:slug/chat/:messageId - Delete a chat message (moderation)
   public async deleteMessage(slug: string, messageId: string) {
-    return this.api.delete<{ success: boolean }>(`${this.endpoint}/${slug}/chat/${messageId}`)
+    return this.api.delete<{ success: boolean; data: null }>(`${this.endpoint}/${slug}/chat/${messageId}`)
   }
 }
 
