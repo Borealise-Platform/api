@@ -38,6 +38,12 @@ export class SubscriptionResource extends ApiResource {
     return this.api.post<CreateIntentResponse>(`${this.endpoint}/create-intent`, { plan })
   }
 
+  // POST /api/subscriptions/cancel-intent
+  // Cancels an incomplete subscription when the user goes back from the payment step
+  public async cancelIntent(subscriptionId: string) {
+    return this.api.post<{ success: boolean }>(`${this.endpoint}/cancel-intent`, { subscriptionId })
+  }
+
   // POST /api/subscriptions/portal
   public async createPortal() {
     return this.api.post<PortalResponse>(`${this.endpoint}/portal`)
