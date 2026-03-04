@@ -46,7 +46,7 @@ export interface FriendActionResponse {
 }
 
 export class FriendResource extends ApiResource<FriendEntry> {
-  protected readonly endpoint = '/api/friends'
+  protected readonly endpoint = '/friends'
 
   // GET /api/friends
   public async list() {
