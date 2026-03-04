@@ -8,6 +8,7 @@ export interface ChatMessage {
   username: string
   display_name: string | null
   role: RoomRole
+  global_role?: string | null
   content: string
   timestamp: number
   deleted?: boolean
