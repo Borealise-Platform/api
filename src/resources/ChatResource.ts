@@ -4,15 +4,16 @@ import type { RoomRole } from './RoomResource'
 export interface ChatMessage {
   id: string
   room_id: number
-  user_id: number
-  username: string
-  display_name: string | null
-  role: RoomRole
+  user_id?: number
+  username?: string
+  display_name?: string | null
+  role?: RoomRole
   global_role?: string | null
   subscription_type?: string | null
   subscription_months?: number
   content: string
   timestamp: number
+  type?: 'user' | 'system'
   deleted?: boolean
 }
 
