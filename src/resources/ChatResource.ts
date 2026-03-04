@@ -9,6 +9,8 @@ export interface ChatMessage {
   display_name: string | null
   role: RoomRole
   global_role?: string | null
+  subscription_type?: string | null
+  subscription_months?: number
   content: string
   timestamp: number
   deleted?: boolean
