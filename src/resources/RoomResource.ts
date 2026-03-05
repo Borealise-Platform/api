@@ -232,6 +232,37 @@ export interface GrabResponse {
   }
 }
 
+export interface PlayHistoryItem {
+  id: number
+  userId: number
+  username: string
+  displayName: string | null
+  avatarId: string
+  media: {
+    id: number
+    source: 'youtube' | 'soundcloud'
+    sourceId: string
+    title: string
+    artist: string | null
+    duration: number
+    thumbnail: string | null
+  }
+  woots: number
+  mehs: number
+  grabs: number
+  skipped: boolean
+  startedAt: string
+  endedAt: string | null
+}
+
+export interface RoomHistoryResponse {
+  success: boolean
+  data: {
+    history: PlayHistoryItem[]
+    total: number
+  }
+}
+
 export class RoomResource extends ApiResource<Room> {
   protected readonly endpoint = '/rooms'
 
@@ -389,6 +420,15 @@ export class RoomResource extends ApiResource<Room> {
   // POST /api/rooms/:slug/booth/grab
   public async grabTrack(slug: string, playlistId?: number) {
     return this.post<GrabResponse>(`${slug}/booth/grab`, playlistId ? { playlistId } : {})
+  }
+
+  // ============================================
+  // History methods
+  // ============================================
+
+  // GET /api/rooms/:slug/history
+  public async getHistory(slug: string, limit = 50, offset = 0) {
+    return this.get<RoomHistoryResponse>(`${slug}/history?limit=${limit}&offset=${offset}`)
   }
 }
 
