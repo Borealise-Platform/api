@@ -188,6 +188,8 @@ export interface JoinMuteInfo {
   expiresAt: string | null
   /** Seconds remaining until unmute, or null if permanent */
   remainingSeconds: number | null
+  /** Optional reason given by the moderator */
+  reason: string | null
 }
 
 export interface JoinRoomResponse {
