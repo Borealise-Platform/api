@@ -183,6 +183,13 @@ export interface BoothState {
   }
 }
 
+export interface JoinMuteInfo {
+  /** ISO timestamp when the mute expires, or null if permanent */
+  expiresAt: string | null
+  /** Seconds remaining until unmute, or null if permanent */
+  remainingSeconds: number | null
+}
+
 export interface JoinRoomResponse {
   success: boolean
   data: {
@@ -196,6 +203,8 @@ export interface JoinRoomResponse {
     role: RoomRole
     users: RoomUserState[]
     booth: BoothState
+    /** Present when the joining user is currently muted in this room */
+    mute: JoinMuteInfo | null
   }
 }
 
