@@ -255,11 +255,20 @@ export interface PlayHistoryItem {
   endedAt: string | null
 }
 
+export interface PaginationMeta {
+  page: number
+  limit: number
+  total: number
+  pages: number
+  hasNext: boolean
+  hasPrev: boolean
+}
+
 export interface RoomHistoryResponse {
   success: boolean
   data: {
     history: PlayHistoryItem[]
-    total: number
+    pagination: PaginationMeta
   }
 }
 
@@ -427,8 +436,8 @@ export class RoomResource extends ApiResource<Room> {
   // ============================================
 
   // GET /api/rooms/:slug/history
-  public async getHistory(slug: string, limit = 50, offset = 0) {
-    return this.get<RoomHistoryResponse>(`${slug}/history?limit=${limit}&offset=${offset}`)
+  public async getHistory(slug: string, page = 1, limit = 20) {
+    return this.get<RoomHistoryResponse>(`${slug}/history?page=${page}&limit=${limit}`)
   }
 }
 
