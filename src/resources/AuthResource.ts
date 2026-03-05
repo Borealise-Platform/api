@@ -28,6 +28,7 @@ export interface RegisterData {
   username: string
   password: string
   displayName?: string
+  token: string
 }
 
 export interface AuthResponse {
