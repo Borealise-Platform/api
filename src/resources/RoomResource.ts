@@ -120,6 +120,25 @@ export interface RoomBansResponse {
   }
 }
 
+export interface RoomMute {
+  id: number
+  userId: number
+  modById: number
+  reason: string | null
+  duration: number | null
+  expiresAt: string | null
+  createdAt: string
+  username: string
+  displayName: string | null
+}
+
+export interface RoomMutesResponse {
+  success: boolean
+  data: {
+    mutes: RoomMute[]
+  }
+}
+
 export interface ModerateUserData {
   reason?: string
   duration?: number
@@ -328,6 +347,11 @@ export class RoomResource extends ApiResource<Room> {
   // GET /api/rooms/:slug/bans
   public async getBans(slug: string) {
     return this.get<RoomBansResponse>(`${slug}/bans`)
+  }
+
+  // GET /api/rooms/:slug/mutes
+  public async getMutes(slug: string) {
+    return this.get<RoomMutesResponse>(`${slug}/mutes`)
   }
 
   // PATCH /api/rooms/:slug/users/:userId/role

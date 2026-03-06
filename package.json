@@ -1,6 +1,6 @@
 {
   "name": "@borealise/api",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "Official API client for Borealise",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
