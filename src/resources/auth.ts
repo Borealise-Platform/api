@@ -1,4 +1,4 @@
-import { ApiResource } from '../ApiResource'
+import type { Api, ApiResponse } from '../Api'
 
 export interface AuthUser {
   id: number
@@ -19,7 +19,7 @@ export interface AuthUser {
 }
 
 export interface LoginCredentials {
-  login: string  // Email or username
+  login: string
   password: string
 }
 
@@ -58,35 +58,22 @@ export interface MeResponse {
   }
 }
 
-export class AuthResource extends ApiResource<AuthUser> {
-  protected readonly endpoint = '/auth'
-
-  // POST /api/auth/login
-  public async login(credentials: LoginCredentials) {
-    return this.post<AuthResponse>('login', credentials)
-  }
-
-  // POST /api/auth/register
-  public async register(data: RegisterData) {
-    return this.post<AuthResponse>('register', data)
-  }
-
-  // POST /api/auth/refresh
-  public async refresh(refreshToken: string) {
-    return this.post<RefreshResponse>('refresh', { refreshToken })
-  }
-
-  // POST /api/auth/logout
-  public async logout() {
-    return this.post<{ success: boolean; message: string }>('logout')
-  }
-
-  // GET /api/auth/me
-  public async me() {
-    return this.get<MeResponse>('me')
-  }
+export interface AuthResource {
+  login(credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>>
+  register(data: RegisterData): Promise<ApiResponse<AuthResponse>>
+  refresh(refreshToken: string): Promise<ApiResponse<RefreshResponse>>
+  logout(): Promise<ApiResponse<{ success: boolean; message: string }>>
+  me(): Promise<ApiResponse<MeResponse>>
 }
 
-// Singleton instance
-export const authResource = new AuthResource()
-export default authResource
+const endpoint = '/auth' as const
+
+export const createAuthResource = (api: Api): AuthResource => ({
+  login: (credentials) => api.post<AuthResponse>(`${endpoint}/login`, credentials),
+  register: (data) => api.post<AuthResponse>(`${endpoint}/register`, data),
+  refresh: (refreshToken) => api.post<RefreshResponse>(`${endpoint}/refresh`, { refreshToken }),
+  logout: () => api.post<{ success: boolean; message: string }>(`${endpoint}/logout`),
+  me: () => api.get<MeResponse>(`${endpoint}/me`),
+})
+
+export default createAuthResource

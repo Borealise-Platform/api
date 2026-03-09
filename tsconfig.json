@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
+    "target": "es2021",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2018"],
+    "lib": ["ES2021"],
     "strict": true,
     "declaration": true,
     "declarationMap": true,

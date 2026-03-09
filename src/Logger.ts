@@ -4,7 +4,7 @@ export class Logger {
   private readonly name: string
   private enabled: boolean
 
-  private constructor(name: string, enabled = true) {
+  public constructor(name: string, enabled = true) {
     this.name = name
     this.enabled = enabled
   }

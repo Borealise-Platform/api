@@ -35,15 +35,13 @@ export class ApiError extends Error {
 }
 
 export class Api {
-  private static instance: Api | null = null
-
   private readonly axios: AxiosInstance
   private readonly logger: Logger
   private readonly config: ApiConfig
 
-  private constructor(config: ApiConfig) {
+  public constructor(config: ApiConfig) {
     this.config = config
-    this.logger = Logger.create('Api')
+    this.logger = new Logger('Api')
 
     if (config.logging === false) {
       this.logger.disable()
@@ -60,21 +58,6 @@ export class Api {
 
     this.setupInterceptors()
     this.logger.success(`initialized (baseURL: ${config.baseURL})`)
-  }
-
-  public static getInstance(config?: ApiConfig): Api {
-    if (!Api.instance) {
-      if (!config) {
-        throw new Error('Api must be initialized with config first. Call Api.getInstance({ baseURL: "..." }) once before using resources.')
-      }
-      Api.instance = new Api(config)
-    }
-    return Api.instance
-  }
-
-  /** Reset the singleton (useful for testing or re-initializing with a new config) */
-  public static reset(): void {
-    Api.instance = null
   }
 
   private setupInterceptors(): void {
@@ -184,5 +167,7 @@ export class Api {
     return this.axios
   }
 }
+
+export const createApi = (config: ApiConfig): Api => new Api(config)
 
 export default Api
