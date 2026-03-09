@@ -10,6 +10,7 @@ import { createSubscriptionResource, type SubscriptionResource } from './subscri
 import { createFriendResource, type FriendResource } from './friend'
 
 export interface ApiClient {
+  api: Api
   auth: AuthResource
   user: UserResource
   room: RoomResource
@@ -25,6 +26,7 @@ export const createApiClient = (config: ApiConfig): ApiClient => {
   const api = createApi(config)
 
   return {
+    api,
     auth: createAuthResource(api),
     user: createUserResource(api),
     room: createRoomResource(api),

@@ -18,22 +18,43 @@ pnpm add @borealise/api axios
 
 ## Quick Start
 
-Initialize the API client once (e.g. in your app entry point), then use the resource singletons anywhere.
+### Option 1: Pre-configured Client (Recommended)
+
+Create a client once, then use resources:
 
 ```ts
-import { Api, authResource, roomResource } from '@borealise/api'
+import { createApiClient } from '@borealise/api'
 
-// Initialize once
-Api.getInstance({
+const client = createApiClient({
   baseURL: 'https://prod.borealise.com',
 })
 
 // Login
-const { data } = await authResource.login({ login: 'you@example.com', password: 'secret' })
-Api.getInstance().setAuthToken(data.data.accessToken)
+const { data } = await client.auth.login({ login: 'you@example.com', password: 'secret' })
+client.api.setAuthToken(data.data.accessToken)
 
 // Join a room
-const room = await roomResource.join('chill-lounge')
+const room = await client.room.join('chill-lounge')
+```
+
+### Option 2: Custom API Instance
+
+If you need more control, create the API and resources separately:
+
+```ts
+import { createApi, createAuthResource, createRoomResource } from '@borealise/api'
+
+const api = createApi({
+  baseURL: 'https://prod.borealise.com',
+  timeout: 15000,
+  logging: false,
+})
+
+const auth = createAuthResource(api)
+const room = createRoomResource(api)
+
+// Use custom instances
+await auth.login({ login: 'you@example.com', password: 'secret' })
 ```
 
 ---
@@ -41,10 +62,11 @@ const room = await roomResource.join('chill-lounge')
 ## Configuration
 
 ```ts
-Api.getInstance({
+createApiClient({
   baseURL: 'https://prod.borealise.com', // required
   timeout: 15000,                        // optional, default: 30000ms
-  logging: false,                        // optional, disable all console output
+  logging: false,                         // optional, disable all console output
+  headers: { 'X-Custom-Header': 'value' } // optional, custom headers
 })
 ```
 
@@ -52,95 +74,132 @@ Api.getInstance({
 
 ## Resources
 
+All resources are accessed via the client:
+
 ### Auth
 
 ```ts
-import { authResource } from '@borealise/api'
+const { auth } = createApiClient({ baseURL: '...' })
 
-await authResource.login({ login: 'user@example.com', password: '...' })
-await authResource.register({ email, username, password, displayName })
-await authResource.refresh(refreshToken)
-await authResource.me()
-await authResource.logout()
+await auth.login({ login: 'user@example.com', password: '...' })
+await auth.register({ email, username, password, displayName })
+await auth.refresh(refreshToken)
+await auth.me()
+await auth.logout()
 ```
 
 ### Users
 
 ```ts
-import { userResource } from '@borealise/api'
+const { user } = createApiClient({ baseURL: '...' })
 
-await userResource.getById(42)
-await userResource.getByUsername('djname')
-await userResource.updateProfile({ displayName: 'DJ Cool', bio: '...' })
-await userResource.deleteAccount()
+await user.getById(42)
+await user.getByUsername('djname')
+await user.updateProfile({ displayName: 'DJ Cool', bio: '...' })
+await user.deleteAccount()
 ```
 
 ### Rooms
 
 ```ts
-import { roomResource } from '@borealise/api'
+const { room } = createApiClient({ baseURL: '...' })
 
-await roomResource.list()
-await roomResource.featured()
-await roomResource.getBySlug('chill-lounge')
-await roomResource.create({ slug: 'my-room', name: 'My Room' })
-await roomResource.join('chill-lounge')
-await roomResource.leave('chill-lounge')
+await room.list()
+await room.featured()
+await room.getBySlug('chill-lounge')
+await room.create({ slug: 'my-room', name: 'My Room' })
+await room.join('chill-lounge')
+await room.leave('chill-lounge')
 
 // Waitlist
-await roomResource.joinWaitlist('chill-lounge')
-await roomResource.leaveWaitlist('chill-lounge')
-await roomResource.lockWaitlist('chill-lounge')
-await roomResource.unlockWaitlist('chill-lounge')
+await room.joinWaitlist('chill-lounge')
+await room.leaveWaitlist('chill-lounge')
+await room.lockWaitlist('chill-lounge')
+await room.unlockWaitlist('chill-lounge')
 
 // Booth
-await roomResource.getBooth('chill-lounge')
-await roomResource.vote('chill-lounge', 'woot')
-await roomResource.grabTrack('chill-lounge', playlistId)
-await roomResource.skipTrack('chill-lounge')
+await room.getBooth('chill-lounge')
+await room.vote('chill-lounge', 'woot')
+await room.grabTrack('chill-lounge', playlistId)
+await room.skipTrack('chill-lounge')
 ```
 
 ### Playlists
 
 ```ts
-import { playlistResource } from '@borealise/api'
+const { playlist } = createApiClient({ baseURL: '...' })
 
-await playlistResource.getAll()
-await playlistResource.getById(1)
-await playlistResource.create('My Playlist')
-await playlistResource.rename(1, 'New Name')
-await playlistResource.activate(1)
-await playlistResource.shuffle(1)
-await playlistResource.addItem(1, { source: 'youtube', sourceId: 'dQw4w9WgXcQ' })
-await playlistResource.removeItem(1, itemId)
-await playlistResource.moveItem(1, itemId, newPosition)
-await playlistResource.importPlaylist(1, { url: 'https://youtube.com/playlist?list=...' })
-await playlistResource.remove(1)
+await playlist.getAll()
+await playlist.getById(1)
+await playlist.create('My Playlist')
+await playlist.rename(1, 'New Name')
+await playlist.activate(1)
+await playlist.shuffle(1)
+await playlist.addItem(1, { source: 'youtube', sourceId: 'dQw4w9WgXcQ' })
+await playlist.removeItem(1, itemId)
+await playlist.moveItem(1, itemId, newPosition)
+await playlist.importPlaylist(1, { url: 'https://youtube.com/playlist?list=...' })
+await playlist.remove(1)
 ```
 
 ### Sources (Media Search)
 
 ```ts
-import { sourceResource } from '@borealise/api'
+const { source } = createApiClient({ baseURL: '...' })
 
-await sourceResource.searchYouTube('lofi hip hop', 10)
-await sourceResource.getYouTubeVideo('dQw4w9WgXcQ')
-await sourceResource.searchSoundCloud('ambient', 10)
-await sourceResource.getSoundCloudTrack('123456')
-await sourceResource.resolveSoundCloudUrl('https://soundcloud.com/artist/track')
+await source.searchYouTube('lofi hip hop', 10)
+await source.getYouTubeVideo('dQw4w9WgXcQ')
+await source.searchSoundCloud('ambient', 10)
+await source.getSoundCloudTrack('123456')
+await source.resolveSoundCloudUrl('https://soundcloud.com/artist/track')
 
 // Search both platforms at once
-const results = await sourceResource.searchAll('chillwave')
+const results = await source.searchAll('chillwave')
 ```
 
 ### Chat
 
 ```ts
-import { chatResource } from '@borealise/api'
+const { chat } = createApiClient({ baseURL: '...' })
 
-await chatResource.getMessages('chill-lounge', beforeId, 50)
-await chatResource.sendMessage('chill-lounge', { content: 'hello!' })
-await chatResource.deleteMessage('chill-lounge', messageId)
+await chat.getMessages('chill-lounge', beforeId, 50)
+await chat.sendMessage('chill-lounge', { content: 'hello!' })
+await chat.deleteMessage('chill-lounge', messageId)
+```
+
+### Friends
+
+```ts
+const { friend } = createApiClient({ baseURL: '...' })
+
+await friend.list()
+await friend.getStatus(targetUserId)
+await friend.sendRequest(targetUserId)
+await friend.acceptRequest(friendshipId)
+await friend.remove(friendshipId)
+await friend.block(targetUserId)
+await friend.unblock(targetUserId)
+```
+
+### Shop
+
+```ts
+const { shop } = createApiClient({ baseURL: '...' })
+
+await shop.getAvatarCatalog()
+await shop.unlockAvatar(avatarId)
+await shop.equipAvatar(avatarId)
+```
+
+### Subscriptions
+
+```ts
+const { subscription } = createApiClient({ baseURL: '...' })
+
+await subscription.getStatus()
+await subscription.createIntent('monthly')
+await subscription.cancelIntent(subscriptionId)
+await subscription.createPortal()
 ```
 
 ---
@@ -153,7 +212,7 @@ All methods throw `ApiError` on failure.
 import { ApiError } from '@borealise/api'
 
 try {
-  await authResource.login({ login: 'bad', password: 'bad' })
+  await api.auth.login({ login: 'bad', password: 'bad' })
 } catch (err) {
   if (err instanceof ApiError) {
     console.log(err.message)   // Human-readable message from backend
@@ -169,13 +228,35 @@ try {
 ## Auth Token Management
 
 ```ts
-const api = Api.getInstance()
+const client = createApiClient({ baseURL: '...' })
 
 // Set token after login
-api.setAuthToken(accessToken)
+client.auth.login({ ... }).then(({ data }) => {
+  client.api.setAuthToken(data.data.accessToken)
+})
 
 // Clear token on logout
-api.setAuthToken(null)
+client.api.setAuthToken(null)
+```
+
+The underlying API instance is accessible via `client.api`. Use it for token management and custom headers:
+
+---
+
+## Tree-Shaking
+
+This library uses factory functions to enable tree-shaking. Bundlers like Vite, Webpack, and Rollup can exclude unused methods from your bundle.
+
+For maximum tree-shaking, import only the factories you need:
+
+```ts
+import { createApi } from '@borealise/api'
+import { createAuthResource } from '@borealise/api/resources/auth'
+import { createRoomResource } from '@borealise/api/resources/room'
+
+const api = createApi({ baseURL: '...' })
+const auth = createAuthResource(api)
+const room = createRoomResource(api)
 ```
 
 ---
