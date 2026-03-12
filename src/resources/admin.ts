@@ -57,6 +57,8 @@ export interface AdminResource {
   getStats(): Promise<ApiResponse<AdminStatsResponse>>
 }
 
+const endpoint = '/admin' as const
+
 export const createAdminResource = (api: Api): AdminResource => ({
   listUsers: (params = {}) => {
     const query = new URLSearchParams()
@@ -68,15 +70,15 @@ export const createAdminResource = (api: Api): AdminResource => ({
     if (params.sortBy) query.set('sortBy', params.sortBy)
     if (params.sortDir) query.set('sortDir', params.sortDir)
     const qs = query.toString()
-    return api.get<AdminUsersResponse>(`/api/admin/users${qs ? `?${qs}` : ''}`)
+    return api.get<AdminUsersResponse>(`${endpoint}/users${qs ? `?${qs}` : ''}`)
   },
-  enableUser: (id) => api.post<{ success: boolean; data: null }>(`/api/admin/users/${id}/enable`),
-  disableUser: (id) => api.post<{ success: boolean; data: null }>(`/api/admin/users/${id}/disable`),
-  updateRole: (id, role) => api.patch<{ success: boolean; data: null }>(`/api/admin/users/${id}/role`, { role }),
-  broadcast: (message) => api.post<{ success: boolean; data: { sent_to_rooms: number } }>('/api/admin/broadcast', { message }),
+  enableUser: (id) => api.post<{ success: boolean; data: null }>(`${endpoint}/users/${id}/enable`),
+  disableUser: (id) => api.post<{ success: boolean; data: null }>(`${endpoint}/users/${id}/disable`),
+  updateRole: (id, role) => api.patch<{ success: boolean; data: null }>(`${endpoint}/users/${id}/role`, { role }),
+  broadcast: (message) => api.post<{ success: boolean; data: { sent_to_rooms: number } }>(`${endpoint}/broadcast`, { message }),
   setMaintenance: (active, message, endsAt) =>
-    api.post<{ success: boolean; data: { active: boolean } }>('/api/admin/maintenance', { active, message, endsAt }),
-  getStats: () => api.get<AdminStatsResponse>('/api/admin/stats'),
+    api.post<{ success: boolean; data: { active: boolean } }>(`${endpoint}/maintenance`, { active, message, endsAt }),
+  getStats: () => api.get<AdminStatsResponse>(`${endpoint}/stats`),
 })
 
 export default createAdminResource
