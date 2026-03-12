@@ -9,6 +9,7 @@ export interface AdminUserEntry {
   avatarId: string
   globalRole: GlobalRole
   disabled: boolean
+  permanentBan: boolean
   emailVerified: boolean
   xp: number
   createdAt: string
@@ -47,6 +48,34 @@ export interface AdminListUsersParams {
   sortDir?: 'asc' | 'desc'
 }
 
+export interface AccountViolation {
+  id: number
+  adminId: number
+  adminUsername: string
+  reason: string
+  revoked: boolean
+  revokedAt: string | null
+  revokerId: number | null
+  createdAt: string
+}
+
+export interface UserViolationsResponse {
+  success: boolean
+  data: {
+    violations: AccountViolation[]
+    permanentBan: boolean
+  }
+}
+
+export interface AddViolationResponse {
+  success: boolean
+  data: {
+    violation: AccountViolation
+    permanentlyBanned: boolean
+    activeViolations: number
+  }
+}
+
 export interface AdminResource {
   listUsers(params?: AdminListUsersParams): Promise<ApiResponse<AdminUsersResponse>>
   enableUser(id: number): Promise<ApiResponse<{ success: boolean; data: null }>>
@@ -55,6 +84,9 @@ export interface AdminResource {
   broadcast(message: string): Promise<ApiResponse<{ success: boolean; data: { sent_to_rooms: number } }>>
   setMaintenance(active: boolean, message?: string, endsAt?: number | null): Promise<ApiResponse<{ success: boolean; data: { active: boolean } }>>
   getStats(): Promise<ApiResponse<AdminStatsResponse>>
+  addViolation(userId: number, reason: string): Promise<ApiResponse<AddViolationResponse>>
+  revokeViolation(violationId: number): Promise<ApiResponse<{ success: boolean; data: null }>>
+  getUserViolations(userId: number): Promise<ApiResponse<UserViolationsResponse>>
 }
 
 const endpoint = '/admin' as const
@@ -79,6 +111,12 @@ export const createAdminResource = (api: Api): AdminResource => ({
   setMaintenance: (active, message, endsAt) =>
     api.post<{ success: boolean; data: { active: boolean } }>(`${endpoint}/maintenance`, { active, message, endsAt }),
   getStats: () => api.get<AdminStatsResponse>(`${endpoint}/stats`),
+  addViolation: (userId, reason) =>
+    api.post<AddViolationResponse>(`${endpoint}/users/${userId}/violations`, { reason }),
+  revokeViolation: (violationId) =>
+    api.delete<{ success: boolean; data: null }>(`${endpoint}/violations/${violationId}`),
+  getUserViolations: (userId) =>
+    api.get<UserViolationsResponse>(`${endpoint}/users/${userId}/violations`),
 })
 
 export default createAdminResource
