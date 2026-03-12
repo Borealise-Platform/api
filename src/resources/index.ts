@@ -8,6 +8,7 @@ import { createSourceResource, type SourceResource, type MediaSource, type Media
 import { createShopResource, type ShopResource, type AvatarUnlockType, type AvatarCatalogItem, type AvatarCatalogResponse, type EquipAvatarData } from './shop'
 import { createSubscriptionResource, type SubscriptionResource, type SubscriptionPlan, type SubscriptionStatus, type CreateIntentResponse, type PortalResponse } from './subscription'
 import { createFriendResource, type FriendResource, type FriendshipStatus, type FriendEntry, type FriendList, type FriendListResponse, type FriendStatusResponse, type FriendActionResponse } from './friend'
+import { createAdminResource, type AdminResource, type AdminUserEntry, type AdminStatsRoom, type AdminStatsResponse, type AdminUsersResponse, type AdminListUsersParams } from './admin'
 
 export interface ApiClient {
   api: Api
@@ -20,6 +21,7 @@ export interface ApiClient {
   shop: ShopResource
   subscription: SubscriptionResource
   friend: FriendResource
+  admin: AdminResource
 }
 
 export const createApiClient = (config: ApiConfig): ApiClient => {
@@ -36,6 +38,7 @@ export const createApiClient = (config: ApiConfig): ApiClient => {
     shop: createShopResource(api),
     subscription: createSubscriptionResource(api),
     friend: createFriendResource(api),
+    admin: createAdminResource(api),
   }
 }
 
@@ -49,3 +52,4 @@ export { createSourceResource, type SourceResource, type MediaSource, type Media
 export { createShopResource, type ShopResource, type AvatarUnlockType, type AvatarCatalogItem, type AvatarCatalogResponse, type EquipAvatarData } from './shop'
 export { createSubscriptionResource, type SubscriptionResource, type SubscriptionPlan, type SubscriptionStatus, type CreateIntentResponse, type PortalResponse } from './subscription'
 export { createFriendResource, type FriendResource, type FriendshipStatus, type FriendEntry, type FriendList, type FriendListResponse, type FriendStatusResponse, type FriendActionResponse } from './friend'
+export { createAdminResource, type AdminResource, type AdminUserEntry, type AdminStatsRoom, type AdminStatsResponse, type AdminUsersResponse, type AdminListUsersParams } from './admin'
