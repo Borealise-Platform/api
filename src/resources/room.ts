@@ -297,6 +297,27 @@ export interface RoomHistoryResponse {
   }
 }
 
+export type AuditAction = 'kick' | 'ban' | 'unban' | 'mute' | 'unmute' | 'role_change' | 'waitlist_move' | 'waitlist_remove' | 'track_skip'
+
+export interface RoomAuditLog {
+  id: number
+  actorId: number
+  actorUsername: string
+  targetId: number | null
+  targetUsername: string | null
+  action: AuditAction
+  metadata: string | null
+  createdAt: string
+}
+
+export interface RoomAuditLogResponse {
+  success: boolean
+  data: {
+    logs: RoomAuditLog[]
+    hasMore: boolean
+  }
+}
+
 export interface RoomResource {
   list(): Promise<ApiResponse<RoomsResponse>>
   featured(): Promise<ApiResponse<FeaturedRoomsResponse>>
@@ -327,6 +348,7 @@ export interface RoomResource {
   vote(slug: string, type: 'woot' | 'meh'): Promise<ApiResponse<VoteResponse>>
   grabTrack(slug: string, playlistId?: number): Promise<ApiResponse<GrabResponse>>
   getHistory(slug: string, page?: number, limit?: number): Promise<ApiResponse<RoomHistoryResponse>>
+  getAuditLog(slug: string, limit?: number, before?: string): Promise<ApiResponse<RoomAuditLogResponse>>
 }
 
 const endpoint = '/rooms' as const
@@ -367,6 +389,7 @@ export const createRoomResource = (api: Api): RoomResource => ({
   vote: (slug, type) => api.post<VoteResponse>(`${endpoint}/${slug}/booth/vote`, { type }),
   grabTrack: (slug, playlistId) => api.post<GrabResponse>(`${endpoint}/${slug}/booth/grab`, playlistId ? { playlistId } : {}),
   getHistory: (slug, page = 1, limit = 20) => api.get<RoomHistoryResponse>(`${endpoint}/${slug}/history`, { params: { page, limit } }),
+  getAuditLog: (slug, limit = 50, before) => api.get<RoomAuditLogResponse>(`${endpoint}/${slug}/audit`, { params: before ? { limit, before } : { limit } }),
 })
 
 export default createRoomResource
