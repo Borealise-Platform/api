@@ -349,6 +349,7 @@ export interface DashboardActivityResponse {
 
 export interface RoomResource {
   list(): Promise<ApiResponse<RoomsResponse>>
+  mine(limit?: number): Promise<ApiResponse<RoomsResponse>>
   featured(): Promise<ApiResponse<FeaturedRoomsResponse>>
   getBySlug(slug: string): Promise<ApiResponse<RoomResponse>>
   create(data: CreateRoomData): Promise<ApiResponse<RoomResponse>>
@@ -385,6 +386,7 @@ const endpoint = '/rooms' as const
 
 export const createRoomResource = (api: Api): RoomResource => ({
   list: () => api.get<RoomsResponse>(endpoint),
+  mine: (limit = 20) => api.get<RoomsResponse>(`${endpoint}/mine`, { params: { limit } }),
   featured: () => api.get<FeaturedRoomsResponse>(`${endpoint}/featured`),
   getBySlug: (slug) => api.get<RoomResponse>(`${endpoint}/${slug}`),
   create: (data) => api.post<RoomResponse>(endpoint, data),
