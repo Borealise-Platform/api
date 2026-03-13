@@ -318,6 +318,35 @@ export interface RoomAuditLogResponse {
   }
 }
 
+export type DashboardActivityType = 'play' | 'woot' | 'grab'
+
+export interface DashboardActivityItem {
+  id: string
+  type: DashboardActivityType
+  room: {
+    id: number
+    slug: string
+    name: string
+  }
+  media: {
+    id: number
+    source: 'youtube' | 'soundcloud'
+    sourceId: string
+    title: string
+    artist: string | null
+    thumbnail: string | null
+  }
+  count: number | null
+  createdAt: string
+}
+
+export interface DashboardActivityResponse {
+  success: boolean
+  data: {
+    activities: DashboardActivityItem[]
+  }
+}
+
 export interface RoomResource {
   list(): Promise<ApiResponse<RoomsResponse>>
   featured(): Promise<ApiResponse<FeaturedRoomsResponse>>
@@ -349,6 +378,7 @@ export interface RoomResource {
   grabTrack(slug: string, playlistId?: number): Promise<ApiResponse<GrabResponse>>
   getHistory(slug: string, page?: number, limit?: number): Promise<ApiResponse<RoomHistoryResponse>>
   getAuditLog(slug: string, limit?: number, before?: string): Promise<ApiResponse<RoomAuditLogResponse>>
+  activity(limit?: number): Promise<ApiResponse<DashboardActivityResponse>>
 }
 
 const endpoint = '/rooms' as const
@@ -390,6 +420,7 @@ export const createRoomResource = (api: Api): RoomResource => ({
   grabTrack: (slug, playlistId) => api.post<GrabResponse>(`${endpoint}/${slug}/booth/grab`, playlistId ? { playlistId } : {}),
   getHistory: (slug, page = 1, limit = 20) => api.get<RoomHistoryResponse>(`${endpoint}/${slug}/history`, { params: { page, limit } }),
   getAuditLog: (slug, limit = 50, before) => api.get<RoomAuditLogResponse>(`${endpoint}/${slug}/audit`, { params: before ? { limit, before } : { limit } }),
+  activity: (limit = 12) => api.get<DashboardActivityResponse>(`${endpoint}/activity`, { params: { limit } }),
 })
 
 export default createRoomResource
