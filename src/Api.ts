@@ -89,15 +89,18 @@ export class Api {
   private parseError(error: AxiosError): ApiError {
     if (error.response) {
       const responseData = error.response.data as BackendErrorResponse | { message?: string } | undefined
+      const isObjectResponse = typeof responseData === 'object' && responseData !== null
 
       let message: string
       let backendResponse: BackendErrorResponse | undefined
 
-      if (responseData && 'error' in responseData && responseData.error) {
+      if (isObjectResponse && 'error' in responseData && responseData.error) {
         message = responseData.error
         backendResponse = responseData as BackendErrorResponse
-      } else if (responseData && 'message' in responseData && responseData.message) {
+      } else if (isObjectResponse && 'message' in responseData && responseData.message) {
         message = responseData.message
+      } else if (typeof responseData === 'string' && responseData) {
+        message = responseData
       } else {
         message = error.message
       }

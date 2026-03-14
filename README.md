@@ -26,7 +26,7 @@ Create a client once, then use resources:
 import { createApiClient } from '@borealise/api'
 
 const client = createApiClient({
-  baseURL: 'https://prod.borealise.com',
+  baseURL: 'https://prod.borealise.com/api',
 })
 
 // Login
@@ -45,7 +45,7 @@ If you need more control, create the API and resources separately:
 import { createApi, createAuthResource, createRoomResource } from '@borealise/api'
 
 const api = createApi({
-  baseURL: 'https://prod.borealise.com',
+  baseURL: 'https://prod.borealise.com/api',
   timeout: 15000,
   logging: false,
 })
@@ -63,7 +63,7 @@ await auth.login({ login: 'you@example.com', password: 'secret' })
 
 ```ts
 createApiClient({
-  baseURL: 'https://prod.borealise.com', // required
+  baseURL: 'https://prod.borealise.com/api', // required
   timeout: 15000,                        // optional, default: 30000ms
   logging: false,                         // optional, disable all console output
   headers: { 'X-Custom-Header': 'value' } // optional, custom headers
