@@ -4,6 +4,34 @@ import type { AccountViolation } from './admin'
 
 export interface User extends AuthUser {}
 
+/**
+ * Public user profile — never contains private fields (email, flags, etc.)
+ */
+export interface PublicUser {
+  id: number
+  username: string
+  displayName: string | null
+  avatarId: string
+  bio: string | null
+  globalRole: string
+  xp: number
+  level: number
+  subscriptionType?: string | null
+  createdAt?: string
+  friendsCount: number
+}
+
+/**
+ * A friend entry as shown on a public profile.
+ */
+export interface PublicProfileFriend {
+  id: number
+  username: string
+  displayName: string | null
+  avatarId: string
+  level: number
+}
+
 export interface UpdateProfileData {
   displayName?: string
   bio?: string
@@ -14,7 +42,8 @@ export type GlobalRole = 'user' | 'moderator' | 'admin' | 'owner'
 export interface UserResponse {
   success: boolean
   data: {
-    user: User
+    user: PublicUser
+    friends: PublicProfileFriend[]
   }
 }
 
