@@ -17,6 +17,7 @@ export interface PublicUser {
   xp: number
   level: number
   subscriptionType?: string | null
+  subscriptionMonths?: number | null
   createdAt?: string
   friendsCount: number
 }
