@@ -17,6 +17,22 @@ export interface Room {
   population: number
   totalPlays: number
   isFeatured: boolean
+  verified: boolean
+  currentDJ?: {
+    id: number
+    username: string
+    displayName: string | null
+    avatarId: string
+  } | null
+  currentMedia?: {
+    id: number
+    source: 'youtube' | 'soundcloud'
+    sourceId: string
+    title: string
+    artist: string | null
+    thumbnail: string | null
+    duration: number
+  } | null
   createdAt: string
   updatedAt: string
 }
