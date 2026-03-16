@@ -14,7 +14,11 @@ export interface ChatMessage {
   content: string
   timestamp: number
   type?: 'user' | 'system'
+  edited_at?: number | null
+  edited_by?: number | null
   deleted?: boolean
+  deleted_at?: number | null
+  deleted_by?: number | null
 }
 
 export interface SendMessageData {
@@ -38,6 +42,7 @@ export interface ChatMessageResponse {
 export interface ChatResource {
   sendMessage(slug: string, data: SendMessageData): Promise<ApiResponse<ChatMessageResponse>>
   getMessages(slug: string, before?: string, limit?: number): Promise<ApiResponse<ChatMessagesResponse>>
+  editMessage(slug: string, messageId: string, data: SendMessageData): Promise<ApiResponse<ChatMessageResponse>>
   deleteMessage(slug: string, messageId: string): Promise<ApiResponse<{ success: boolean; data: null }>>
 }
 
@@ -52,6 +57,7 @@ export const createChatResource = (api: Api): ChatResource => ({
     }
     return api.get<ChatMessagesResponse>(`${endpoint}/${slug}/chat`, { params })
   },
+  editMessage: (slug, messageId, data) => api.patch<ChatMessageResponse>(`${endpoint}/${slug}/chat/${messageId}`, data),
   deleteMessage: (slug, messageId) => api.delete<{ success: boolean; data: null }>(`${endpoint}/${slug}/chat/${messageId}`),
 })
 
