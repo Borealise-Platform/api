@@ -18,6 +18,7 @@ export interface PublicUser {
   level: number
   subscriptionType?: string | null
   subscriptionMonths?: number | null
+  currentRoomSlug?: string | null
   createdAt?: string
   friendsCount: number
 }

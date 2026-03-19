@@ -15,6 +15,7 @@ export interface FriendEntry {
   displayName: string | null
   avatarId: string
   level: number
+  currentRoomSlug?: string | null
   status: 'pending' | 'accepted' | 'blocked'
   isSender: boolean
 }
