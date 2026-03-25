@@ -7,6 +7,7 @@ export interface ChatMessage {
   user_id?: number
   username?: string
   display_name?: string | null
+  avatar_id?: string | null
   role?: RoomRole
   global_role?: string | null
   subscription_type?: string | null
