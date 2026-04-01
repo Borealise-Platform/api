@@ -61,7 +61,7 @@ export interface MeResponse {
 export interface AuthResource {
   login(credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>>
   register(data: RegisterData): Promise<ApiResponse<AuthResponse>>
-  refresh(refreshToken: string): Promise<ApiResponse<RefreshResponse>>
+  refresh(refreshToken?: string): Promise<ApiResponse<RefreshResponse>>
   logout(): Promise<ApiResponse<{ success: boolean; message: string }>>
   me(): Promise<ApiResponse<MeResponse>>
   forgotPassword(email: string): Promise<ApiResponse<{ success: boolean }>>
@@ -73,7 +73,7 @@ const endpoint = '/auth' as const
 export const createAuthResource = (api: Api): AuthResource => ({
   login: (credentials) => api.post<AuthResponse>(`${endpoint}/login`, credentials),
   register: (data) => api.post<AuthResponse>(`${endpoint}/register`, data),
-  refresh: (refreshToken) => api.post<RefreshResponse>(`${endpoint}/refresh`, { refreshToken }),
+  refresh: (refreshToken) => api.post<RefreshResponse>(`${endpoint}/refresh`, refreshToken ? { refreshToken } : {}),
   logout: () => api.post<{ success: boolean; message: string }>(`${endpoint}/logout`),
   me: () => api.get<MeResponse>(`${endpoint}/me`),
   forgotPassword: (email) => api.post<{ success: boolean }>(`${endpoint}/forgot-password`, { email }),

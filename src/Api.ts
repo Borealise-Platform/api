@@ -1,10 +1,11 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { Logger } from './Logger'
 
 export interface ApiConfig {
   baseURL: string
   timeout?: number
   headers?: Record<string, string>
+  withCredentials?: boolean
   /** Set to false to suppress all log output. Defaults to true. */
   logging?: boolean
 }
@@ -50,6 +51,7 @@ export class Api {
     this.axios = axios.create({
       baseURL: config.baseURL,
       timeout: config.timeout ?? 30000,
+      withCredentials: config.withCredentials ?? false,
       headers: {
         'Content-Type': 'application/json',
         ...config.headers
@@ -62,18 +64,18 @@ export class Api {
 
   private setupInterceptors(): void {
     this.axios.interceptors.request.use(
-      (config) => {
+      (config: InternalAxiosRequestConfig) => {
         this.logger.debug(`→ ${config.method?.toUpperCase()} ${config.url}`)
         return config
       },
-      (error) => {
+      (error: unknown) => {
         this.logger.error('Request error', error)
         return Promise.reject(error)
       }
     )
 
     this.axios.interceptors.response.use(
-      (response) => {
+      (response: AxiosResponse) => {
         this.logger.debug(`← ${response.status} ${response.config.url}`)
         return response
       },
