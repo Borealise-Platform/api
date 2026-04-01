@@ -13,7 +13,17 @@ interface HttpResponseLike {
   text(): Promise<string>
 }
 
-const resolveUrl = (baseURL: string, url: string): string => new URL(url, baseURL).toString()
+const ABSOLUTE_URL_PATTERN = /^[a-z][a-z\d+\-.]*:\/\//i
+
+const resolveUrl = (baseURL: string, url: string): string => {
+  if (ABSOLUTE_URL_PATTERN.test(url)) {
+    return url
+  }
+
+  const normalizedBase = baseURL.replace(/\/+$/, '')
+  const normalizedPath = url.replace(/^\/+/, '')
+  return `${normalizedBase}/${normalizedPath}`
+}
 
 const parseQueryParams = (params?: ApiQueryParams): URLSearchParams | undefined => {
   if (!params) {
