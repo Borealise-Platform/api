@@ -1,5 +1,4 @@
 import ky, { Options } from 'ky'
-import { URL, URLSearchParams } from 'node:url'
 import { Logger } from '../Logger'
 import { parseApiError } from './errors'
 import type { Api, ApiConfig, ApiQueryParams, ApiRequestConfig, ApiResponse } from './types'

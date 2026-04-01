@@ -1,5 +1,3 @@
-import { URLSearchParams } from 'node:url'
-
 export interface ApiConfig {
   baseURL: string
   timeout?: number
