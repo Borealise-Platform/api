@@ -5,14 +5,12 @@ Official JavaScript/TypeScript API client for [Borealise](https://borealise.com)
 ## Installation
 
 ```bash
-npm install @borealise/api axios
+npm install @borealise/api
 # or
-yarn add @borealise/api axios
+yarn add @borealise/api
 # or
-pnpm add @borealise/api axios
+pnpm add @borealise/api
 ```
-
-> `axios` is a peer dependency — you need to install it alongside this package.
 
 ---
 
@@ -217,7 +215,7 @@ try {
   if (err instanceof ApiError) {
     console.log(err.message)   // Human-readable message from backend
     console.log(err.status)    // HTTP status code, e.g. 401
-    console.log(err.code)      // Axios error code, e.g. 'NETWORK_ERROR'
+    console.log(err.code)      // Error code, e.g. 'NETWORK_ERROR', 'TIMEOUT_ERROR', 'HTTP_401'
     console.log(err.response)  // Raw backend error response body
   }
 }
@@ -240,6 +238,12 @@ client.api.setAuthToken(null)
 ```
 
 The underlying API instance is accessible via `client.api`. Use it for token management and custom headers:
+
+## Breaking Changes in 2.1.0-alpha.1
+
+- The `axiosInstance` getter was removed from `Api`.
+- The HTTP transport is now handled internally with Ky.
+- If you previously accessed raw Axios internals, migrate to `Api` public methods (`get`, `post`, `put`, `patch`, `delete`, `setAuthToken`, `setHeader`, `removeHeader`).
 
 ---
 
