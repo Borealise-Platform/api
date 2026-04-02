@@ -1,6 +1,5 @@
 import type { Api, ApiResponse } from '../Api'
 import type { AuthUser } from './auth'
-import type { AccountViolation } from './admin'
 
 export interface User extends AuthUser {}
 
