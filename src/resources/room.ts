@@ -256,7 +256,7 @@ export interface BoothResponse {
 export interface VoteResponse {
   success: boolean
   data: {
-    vote: 'woot' | 'meh'
+    vote: 'woot' | 'meh' | null
     votes: {
       woots: number
       mehs: number
@@ -270,6 +270,31 @@ export interface GrabResponse {
   data: {
     playlistId: number
     message: string
+  }
+}
+
+export interface RoomCustomEmoji {
+  id: string
+  name: string
+  image_url: string
+  animated: boolean
+  created_by: number
+  created_at: number
+}
+
+export interface RoomCustomSticker {
+  id: string
+  name: string
+  image_url: string
+  created_by: number
+  created_at: number
+}
+
+export interface RoomAssetsResponse {
+  success: boolean
+  data: {
+    emojis: RoomCustomEmoji[]
+    stickers: RoomCustomSticker[]
   }
 }
 
@@ -393,6 +418,11 @@ export interface RoomResource {
   skipTrack(slug: string, options?: { stayInBooth?: boolean }): Promise<ApiResponse<{ success: boolean; data?: { stayedInBooth: boolean } }>>
   vote(slug: string, type: 'woot' | 'meh'): Promise<ApiResponse<VoteResponse>>
   grabTrack(slug: string, playlistId?: number): Promise<ApiResponse<GrabResponse>>
+  getAssets(slug: string): Promise<ApiResponse<RoomAssetsResponse>>
+  createEmoji(slug: string, data: { name?: string; file: File | Blob; animated?: boolean }): Promise<ApiResponse<{ success: boolean; data: { emojis: RoomCustomEmoji[] } }>>
+  deleteEmoji(slug: string, emojiId: string): Promise<ApiResponse<{ success: boolean; data: { emojis: RoomCustomEmoji[] } }>>
+  createSticker(slug: string, data: { name?: string; file: File | Blob }): Promise<ApiResponse<{ success: boolean; data: { stickers: RoomCustomSticker[] } }>>
+  deleteSticker(slug: string, stickerId: string): Promise<ApiResponse<{ success: boolean; data: { stickers: RoomCustomSticker[] } }>>
   getHistory(slug: string, page?: number, limit?: number): Promise<ApiResponse<RoomHistoryResponse>>
   getAuditLog(slug: string, limit?: number, before?: string): Promise<ApiResponse<RoomAuditLogResponse>>
   activity(limit?: number): Promise<ApiResponse<DashboardActivityResponse>>
@@ -436,6 +466,26 @@ export const createRoomResource = (api: Api): RoomResource => ({
   ),
   vote: (slug, type) => api.post<VoteResponse>(`${endpoint}/${slug}/booth/vote`, { type }),
   grabTrack: (slug, playlistId) => api.post<GrabResponse>(`${endpoint}/${slug}/booth/grab`, playlistId ? { playlistId } : {}),
+  getAssets: (slug) => api.get<RoomAssetsResponse>(`${endpoint}/${slug}/assets`),
+  createEmoji: (slug, data) => {
+    const FormDataCtor = (globalThis as { FormData?: new () => { set(name: string, value: unknown): void } }).FormData
+    if (!FormDataCtor) throw new Error('FormData is not available in this runtime')
+    const form = new FormDataCtor()
+    if (data.name) form.set('name', data.name)
+    form.set('file', data.file)
+    if (typeof data.animated === 'boolean') form.set('animated', `${data.animated}`)
+    return api.post<{ success: boolean; data: { emojis: RoomCustomEmoji[] } }>(`${endpoint}/${slug}/assets/emojis`, form)
+  },
+  deleteEmoji: (slug, emojiId) => api.delete<{ success: boolean; data: { emojis: RoomCustomEmoji[] } }>(`${endpoint}/${slug}/assets/emojis/${emojiId}`),
+  createSticker: (slug, data) => {
+    const FormDataCtor = (globalThis as { FormData?: new () => { set(name: string, value: unknown): void } }).FormData
+    if (!FormDataCtor) throw new Error('FormData is not available in this runtime')
+    const form = new FormDataCtor()
+    if (data.name) form.set('name', data.name)
+    form.set('file', data.file)
+    return api.post<{ success: boolean; data: { stickers: RoomCustomSticker[] } }>(`${endpoint}/${slug}/assets/stickers`, form)
+  },
+  deleteSticker: (slug, stickerId) => api.delete<{ success: boolean; data: { stickers: RoomCustomSticker[] } }>(`${endpoint}/${slug}/assets/stickers/${stickerId}`),
   getHistory: (slug, page = 1, limit = 20) => api.get<RoomHistoryResponse>(`${endpoint}/${slug}/history`, { params: { page, limit } }),
   getAuditLog: (slug, limit = 50, before) => api.get<RoomAuditLogResponse>(`${endpoint}/${slug}/audit`, { params: before ? { limit, before } : { limit } }),
   activity: (limit = 12) => api.get<DashboardActivityResponse>(`${endpoint}/activity`, { params: { limit } }),

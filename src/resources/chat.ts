@@ -40,11 +40,28 @@ export interface ChatMessageResponse {
   }
 }
 
+export interface GifSearchItem {
+  id: string
+  title: string
+  url: string
+  preview_url: string | null
+  width: number | null
+  height: number | null
+}
+
+export interface GifSearchResponse {
+  success: boolean
+  data: {
+    gifs: GifSearchItem[]
+  }
+}
+
 export interface ChatResource {
   sendMessage(slug: string, data: SendMessageData): Promise<ApiResponse<ChatMessageResponse>>
   getMessages(slug: string, before?: string, limit?: number): Promise<ApiResponse<ChatMessagesResponse>>
   editMessage(slug: string, messageId: string, data: SendMessageData): Promise<ApiResponse<ChatMessageResponse>>
   deleteMessage(slug: string, messageId: string): Promise<ApiResponse<{ success: boolean; data: null }>>
+  searchGifs(query: string, limit?: number): Promise<ApiResponse<GifSearchResponse>>
 }
 
 const endpoint = '/rooms' as const
@@ -60,6 +77,7 @@ export const createChatResource = (api: Api): ChatResource => ({
   },
   editMessage: (slug, messageId, data) => api.patch<ChatMessageResponse>(`${endpoint}/${slug}/chat/${messageId}`, data),
   deleteMessage: (slug, messageId) => api.delete<{ success: boolean; data: null }>(`${endpoint}/${slug}/chat/${messageId}`),
+  searchGifs: (query, limit = 20) => api.post<GifSearchResponse>('/chat/gif/search', { query, limit }),
 })
 
 export default createChatResource

@@ -105,7 +105,13 @@ export const createApi = (config: ApiConfig): Api => {
     try {
       const options = buildOptions(defaultHeaders, requestConfig)
       if (data !== undefined) {
-        options.json = data
+        if (data instanceof FormData) {
+          const headers = options.headers as Record<string, string>
+          delete headers['Content-Type']
+          options.body = data
+        } else {
+          options.json = data
+        }
       }
 
       const response = await client(resolveUrl(config.baseURL, url), {
