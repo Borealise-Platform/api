@@ -20,10 +20,22 @@ export interface ChatMessage {
   deleted?: boolean
   deleted_at?: number | null
   deleted_by?: number | null
+  reply_to?: ChatReplyTarget | null
+}
+
+export interface ChatReplyTarget {
+  id: string
+  user_id?: number
+  username?: string
+  display_name?: string | null
+  content: string
+  type?: 'user' | 'system'
+  deleted?: boolean
 }
 
 export interface SendMessageData {
   content: string
+  replyToId?: string
 }
 
 export interface ChatMessagesResponse {
