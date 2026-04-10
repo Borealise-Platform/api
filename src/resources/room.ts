@@ -1,6 +1,7 @@
 import type { Api, ApiResponse } from '../Api'
 
 export type RoomRole = 'user' | 'resident_dj' | 'bouncer' | 'manager' | 'cohost' | 'host'
+export type RoomMode = 'standard' | 'dj_live'
 
 export interface Room {
   id: number
@@ -14,6 +15,7 @@ export interface Room {
   isNsfw: boolean
   waitlistLocked: boolean
   waitlistCycleEnabled: boolean
+  mode: RoomMode
   population: number
   totalPlays: number
   isFeatured: boolean
@@ -26,7 +28,7 @@ export interface Room {
   } | null
   currentMedia?: {
     id: number
-    source: 'youtube' | 'soundcloud'
+    source: 'youtube' | 'soundcloud' | 'hls' | 'mp4'
     sourceId: string
     title: string
     artist: string | null
@@ -60,6 +62,7 @@ export interface CreateRoomData {
   welcomeMessage?: string
   isPrivate?: boolean
   isNsfw?: boolean
+  mode?: RoomMode
 }
 
 export interface UpdateRoomData {
@@ -71,6 +74,7 @@ export interface UpdateRoomData {
   isNsfw?: boolean
   waitlistLocked?: boolean
   waitlistCycleEnabled?: boolean
+  mode?: RoomMode
 }
 
 export interface RoomResponse {
@@ -191,7 +195,7 @@ export interface BoothDJ {
 
 export interface BoothMedia {
   id: number
-  source: 'youtube' | 'soundcloud'
+  source: 'youtube' | 'soundcloud' | 'hls' | 'mp4'
   sourceId: string
   title: string
   artist: string | null
@@ -223,6 +227,38 @@ export interface JoinMuteInfo {
   reason: string | null
 }
 
+export interface RoomLiveStreamStatus {
+  status: 'offline' | 'starting' | 'live' | 'error'
+  hlsUrl?: string
+  startedAt?: number | null
+  updatedAt?: number
+  reason?: string
+  role?: 'host' | 'cohost'
+}
+
+export interface RoomLiveStatusResponse {
+  success: boolean
+  data: {
+    roomSlug: string
+    mode: RoomMode
+    canBroadcast: boolean
+    stream: RoomLiveStreamStatus
+  }
+}
+
+export interface RoomLiveStartResponse {
+  success: boolean
+  data: {
+    roomSlug: string
+    status: 'starting' | 'live'
+    ingestUrl: string
+    streamName: string
+    hlsUrl: string
+    streamKey: string
+    role: 'host' | 'cohost'
+  }
+}
+
 export interface JoinRoomResponse {
   success: boolean
   data: {
@@ -232,6 +268,7 @@ export interface JoinRoomResponse {
       name: string
       waitlistLocked: boolean
       waitlistCycleEnabled: boolean
+      mode: RoomMode
     }
     role: RoomRole
     users: RoomUserState[]
@@ -306,7 +343,7 @@ export interface PlayHistoryItem {
   avatarId: string
   media: {
     id: number
-    source: 'youtube' | 'soundcloud'
+    source: 'youtube' | 'soundcloud' | 'hls' | 'mp4'
     sourceId: string
     title: string
     artist: string | null
@@ -371,7 +408,7 @@ export interface DashboardActivityItem {
   }
   media: {
     id: number
-    source: 'youtube' | 'soundcloud'
+    source: 'youtube' | 'soundcloud' | 'hls' | 'mp4'
     sourceId: string
     title: string
     artist: string | null
@@ -418,6 +455,9 @@ export interface RoomResource {
   skipTrack(slug: string, options?: { stayInBooth?: boolean }): Promise<ApiResponse<{ success: boolean; data?: { stayedInBooth: boolean } }>>
   vote(slug: string, type: 'woot' | 'meh'): Promise<ApiResponse<VoteResponse>>
   grabTrack(slug: string, playlistId?: number): Promise<ApiResponse<GrabResponse>>
+  startLive(slug: string): Promise<ApiResponse<RoomLiveStartResponse>>
+  stopLive(slug: string): Promise<ApiResponse<{ success: boolean; data: { roomSlug: string; status: 'offline' | 'error' | 'starting' | 'live' } }>>
+  getLiveStatus(slug: string): Promise<ApiResponse<RoomLiveStatusResponse>>
   getAssets(slug: string): Promise<ApiResponse<RoomAssetsResponse>>
   createEmoji(slug: string, data: { name?: string; file: File | Blob; animated?: boolean }): Promise<ApiResponse<{ success: boolean; data: { emojis: RoomCustomEmoji[] } }>>
   deleteEmoji(slug: string, emojiId: string): Promise<ApiResponse<{ success: boolean; data: { emojis: RoomCustomEmoji[] } }>>
@@ -466,6 +506,9 @@ export const createRoomResource = (api: Api): RoomResource => ({
   ),
   vote: (slug, type) => api.post<VoteResponse>(`${endpoint}/${slug}/booth/vote`, { type }),
   grabTrack: (slug, playlistId) => api.post<GrabResponse>(`${endpoint}/${slug}/booth/grab`, playlistId ? { playlistId } : {}),
+  startLive: (slug) => api.post<RoomLiveStartResponse>(`${endpoint}/${slug}/live/start`),
+  stopLive: (slug) => api.post<{ success: boolean; data: { roomSlug: string; status: 'offline' | 'error' | 'starting' | 'live' } }>(`${endpoint}/${slug}/live/stop`),
+  getLiveStatus: (slug) => api.get<RoomLiveStatusResponse>(`${endpoint}/${slug}/live/status`),
   getAssets: (slug) => api.get<RoomAssetsResponse>(`${endpoint}/${slug}/assets`),
   createEmoji: (slug, data) => {
     const FormDataCtor = (globalThis as { FormData?: new () => { set(name: string, value: unknown): void } }).FormData
