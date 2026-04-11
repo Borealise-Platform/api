@@ -230,6 +230,9 @@ export interface JoinMuteInfo {
 export interface RoomLiveStreamStatus {
   status: 'offline' | 'starting' | 'live' | 'error'
   hlsUrl?: string
+  ingestUrl?: string
+  streamName?: string
+  streamKey?: string
   userId?: number
   startedAt?: number | null
   updatedAt?: number
