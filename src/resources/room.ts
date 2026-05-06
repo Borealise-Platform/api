@@ -202,6 +202,8 @@ export interface BoothMedia {
   duration: number
   thumbnail: string | null
   elapsed: number
+  trimStart?: number | null
+  trimEnd?: number | null
 }
 
 export interface WaitlistUser {

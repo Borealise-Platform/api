@@ -12,6 +12,8 @@ export interface MediaItem {
   duration: number
   thumbnail: string | null
   position: number
+  trimStart?: number | null
+  trimEnd?: number | null
   createdAt: string
   updatedAt: string
 }
@@ -79,6 +81,11 @@ export interface ImportPlaylistResponse {
   data: ImportResult
 }
 
+export interface TrimMediaData {
+  trimStart?: number | null
+  trimEnd?: number | null
+}
+
 export interface PlaylistResource {
   getAll(): Promise<ApiResponse<PlaylistsResponse>>
   getById(playlistId: number): Promise<ApiResponse<PlaylistResponse>>
@@ -90,6 +97,7 @@ export interface PlaylistResource {
   addItem(playlistId: number, data: AddMediaData): Promise<ApiResponse<MediaItemResponse>>
   removeItem(playlistId: number, itemId: number): Promise<ApiResponse<{ success: boolean }>>
   moveItem(playlistId: number, itemId: number, position: number): Promise<ApiResponse<MediaItemResponse>>
+  trimItem(playlistId: number, itemId: number, data: TrimMediaData): Promise<ApiResponse<MediaItemResponse>>
   importPlaylist(playlistId: number, data: ImportPlaylistData): Promise<ApiResponse<ImportPlaylistResponse>>
 }
 
@@ -106,6 +114,7 @@ export const createPlaylistResource = (api: Api): PlaylistResource => ({
   addItem: (playlistId, data) => api.post<MediaItemResponse>(`${endpoint}/${playlistId}/items`, data),
   removeItem: (playlistId, itemId) => api.delete<{ success: boolean }>(`${endpoint}/${playlistId}/items/${itemId}`),
   moveItem: (playlistId, itemId, position) => api.patch<MediaItemResponse>(`${endpoint}/${playlistId}/items/${itemId}/move`, { position }),
+  trimItem: (playlistId, itemId, data) => api.patch<MediaItemResponse>(`${endpoint}/${playlistId}/items/${itemId}/trim`, data),
   importPlaylist: (playlistId, data) => api.post<ImportPlaylistResponse>(`${endpoint}/${playlistId}/import`, data),
 })
 
