@@ -11,6 +11,7 @@ export interface Room {
   welcomeMessage: string | null
   genreTags: string[] | null
   moodTag: string | null
+  stageBackground: string
   hostId: number
   minChatLevel: number
   isPrivate: boolean
@@ -64,6 +65,7 @@ export interface CreateRoomData {
   welcomeMessage?: string
   genreTags?: string[]
   moodTag?: string
+  stageBackground?: string
   isPrivate?: boolean
   isNsfw?: boolean
   mode?: RoomMode
@@ -75,6 +77,7 @@ export interface UpdateRoomData {
   welcomeMessage?: string
   genreTags?: string[]
   moodTag?: string
+  stageBackground?: string
   minChatLevel?: number
   isPrivate?: boolean
   isNsfw?: boolean
@@ -349,6 +352,20 @@ export interface RoomAssetsResponse {
   }
 }
 
+export interface RoomCustomBackground {
+  id: string
+  image_url: string
+  created_by: number
+  created_at: number
+}
+
+export interface RoomCustomBackgroundsResponse {
+  success: boolean
+  data: {
+    backgrounds: RoomCustomBackground[]
+  }
+}
+
 export interface PlayHistoryItem {
   id: number
   userId: number
@@ -477,6 +494,9 @@ export interface RoomResource {
   deleteEmoji(slug: string, emojiId: string): Promise<ApiResponse<{ success: boolean; data: { emojis: RoomCustomEmoji[] } }>>
   createSticker(slug: string, data: { name?: string; file: File | Blob }): Promise<ApiResponse<{ success: boolean; data: { stickers: RoomCustomSticker[] } }>>
   deleteSticker(slug: string, stickerId: string): Promise<ApiResponse<{ success: boolean; data: { stickers: RoomCustomSticker[] } }>>
+  getCustomBackgrounds(slug: string): Promise<ApiResponse<RoomCustomBackgroundsResponse>>
+  createCustomBackground(slug: string, data: { imageUrl: string }): Promise<ApiResponse<{ success: boolean; data: { backgrounds: RoomCustomBackground[] } }>>
+  deleteCustomBackground(slug: string, backgroundId: string): Promise<ApiResponse<{ success: boolean; data: { backgrounds: RoomCustomBackground[] } }>>
   getHistory(slug: string, page?: number, limit?: number): Promise<ApiResponse<RoomHistoryResponse>>
   getAuditLog(slug: string, limit?: number, before?: string): Promise<ApiResponse<RoomAuditLogResponse>>
   activity(limit?: number): Promise<ApiResponse<DashboardActivityResponse>>
@@ -543,6 +563,9 @@ export const createRoomResource = (api: Api): RoomResource => ({
     return api.post<{ success: boolean; data: { stickers: RoomCustomSticker[] } }>(`${endpoint}/${slug}/assets/stickers`, form)
   },
   deleteSticker: (slug, stickerId) => api.delete<{ success: boolean; data: { stickers: RoomCustomSticker[] } }>(`${endpoint}/${slug}/assets/stickers/${stickerId}`),
+  getCustomBackgrounds: (slug) => api.get<RoomCustomBackgroundsResponse>(`${endpoint}/${slug}/assets/backgrounds`),
+  createCustomBackground: (slug, data) => api.post<{ success: boolean; data: { backgrounds: RoomCustomBackground[] } }>(`${endpoint}/${slug}/assets/backgrounds`, data),
+  deleteCustomBackground: (slug, backgroundId) => api.delete<{ success: boolean; data: { backgrounds: RoomCustomBackground[] } }>(`${endpoint}/${slug}/assets/backgrounds/${backgroundId}`),
   getHistory: (slug, page = 1, limit = 20) => api.get<RoomHistoryResponse>(`${endpoint}/${slug}/history`, { params: { page, limit } }),
   getAuditLog: (slug, limit = 50, before) => api.get<RoomAuditLogResponse>(`${endpoint}/${slug}/audit`, { params: before ? { limit, before } : { limit } }),
   activity: (limit = 12) => api.get<DashboardActivityResponse>(`${endpoint}/activity`, { params: { limit } }),
