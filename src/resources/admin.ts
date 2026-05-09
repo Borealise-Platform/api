@@ -29,11 +29,23 @@ export interface AdminStatsRoom {
   population: number
 }
 
+export interface AdminHourlyPoint {
+  hour: number
+  count: number
+}
+
 export interface AdminStatsResponse {
   success: boolean
   data: {
     activeRooms: number
     totalOnlineUsers: number
+    guestVisitsToday: number
+    newAccountsToday: number
+    graphs: {
+      guestVisitsByHour: AdminHourlyPoint[]
+      newAccountsByHour: AdminHourlyPoint[]
+      onlineByHour: AdminHourlyPoint[]
+    }
     rooms: AdminStatsRoom[]
   }
 }
