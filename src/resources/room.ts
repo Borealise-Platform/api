@@ -9,6 +9,8 @@ export interface Room {
   name: string
   description: string | null
   welcomeMessage: string | null
+  genreTags: string[] | null
+  moodTag: string | null
   hostId: number
   minChatLevel: number
   isPrivate: boolean
@@ -60,6 +62,8 @@ export interface CreateRoomData {
   name: string
   description?: string
   welcomeMessage?: string
+  genreTags?: string[]
+  moodTag?: string
   isPrivate?: boolean
   isNsfw?: boolean
   mode?: RoomMode
@@ -69,6 +73,8 @@ export interface UpdateRoomData {
   name?: string
   description?: string
   welcomeMessage?: string
+  genreTags?: string[]
+  moodTag?: string
   minChatLevel?: number
   isPrivate?: boolean
   isNsfw?: boolean
