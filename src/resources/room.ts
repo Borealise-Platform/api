@@ -17,6 +17,7 @@ export interface Room {
   isPrivate: boolean
   isNsfw: boolean
   chatFilterEnabled: boolean
+  chatFilterTerms: string[] | null
   waitlistLocked: boolean
   waitlistCycleEnabled: boolean
   mode: RoomMode
@@ -70,6 +71,7 @@ export interface CreateRoomData {
   isPrivate?: boolean
   isNsfw?: boolean
   chatFilterEnabled?: boolean
+  chatFilterTerms?: string[]
   mode?: RoomMode
 }
 
@@ -84,6 +86,7 @@ export interface UpdateRoomData {
   isPrivate?: boolean
   isNsfw?: boolean
   chatFilterEnabled?: boolean
+  chatFilterTerms?: string[]
   waitlistLocked?: boolean
   waitlistCycleEnabled?: boolean
   mode?: RoomMode
