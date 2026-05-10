@@ -16,6 +16,7 @@ export interface Room {
   minChatLevel: number
   isPrivate: boolean
   isNsfw: boolean
+  chatFilterEnabled: boolean
   waitlistLocked: boolean
   waitlistCycleEnabled: boolean
   mode: RoomMode
@@ -68,6 +69,7 @@ export interface CreateRoomData {
   stageBackground?: string
   isPrivate?: boolean
   isNsfw?: boolean
+  chatFilterEnabled?: boolean
   mode?: RoomMode
 }
 
@@ -81,6 +83,7 @@ export interface UpdateRoomData {
   minChatLevel?: number
   isPrivate?: boolean
   isNsfw?: boolean
+  chatFilterEnabled?: boolean
   waitlistLocked?: boolean
   waitlistCycleEnabled?: boolean
   mode?: RoomMode
