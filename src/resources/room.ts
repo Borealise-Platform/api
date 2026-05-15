@@ -34,7 +34,7 @@ export interface Room {
   } | null
   currentMedia?: {
     id: number
-    source: 'youtube' | 'soundcloud' | 'hls' | 'mp4'
+    source: 'youtube' | 'soundcloud' | 'hls' | 'mp4' | 'mp3'
     sourceId: string
     title: string
     artist: string | null
@@ -213,7 +213,7 @@ export interface BoothDJ {
 
 export interface BoothMedia {
   id: number
-  source: 'youtube' | 'soundcloud' | 'hls' | 'mp4'
+  source: 'youtube' | 'soundcloud' | 'hls' | 'mp4' | 'mp3'
   sourceId: string
   title: string
   artist: string | null
@@ -383,7 +383,7 @@ export interface PlayHistoryItem {
   avatarId: string
   media: {
     id: number
-    source: 'youtube' | 'soundcloud' | 'hls' | 'mp4'
+    source: 'youtube' | 'soundcloud' | 'hls' | 'mp4' | 'mp3'
     sourceId: string
     title: string
     artist: string | null
@@ -448,7 +448,7 @@ export interface DashboardActivityItem {
   }
   media: {
     id: number
-    source: 'youtube' | 'soundcloud' | 'hls' | 'mp4'
+    source: 'youtube' | 'soundcloud' | 'hls' | 'mp4' | 'mp3'
     sourceId: string
     title: string
     artist: string | null
