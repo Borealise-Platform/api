@@ -1,7 +1,7 @@
 import type { Api, ApiResponse } from '../Api'
 
 export type RoomRole = 'user' | 'resident_dj' | 'bouncer' | 'manager' | 'cohost' | 'host'
-export type RoomMode = 'standard' | 'dj_live'
+export type RoomMode = 'standard' | 'dj_live' | 'direct_transmission'
 
 export interface Room {
   id: number
@@ -21,6 +21,7 @@ export interface Room {
   waitlistLocked: boolean
   waitlistCycleEnabled: boolean
   mode: RoomMode
+  directMediaUrl?: string | null
   population: number
   totalPlays: number
   isFeatured: boolean
@@ -73,6 +74,7 @@ export interface CreateRoomData {
   chatFilterEnabled?: boolean
   chatFilterTerms?: string[]
   mode?: RoomMode
+  directMediaUrl?: string
 }
 
 export interface UpdateRoomData {
@@ -90,6 +92,7 @@ export interface UpdateRoomData {
   waitlistLocked?: boolean
   waitlistCycleEnabled?: boolean
   mode?: RoomMode
+  directMediaUrl?: string
 }
 
 export interface RoomResponse {
