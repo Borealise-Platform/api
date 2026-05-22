@@ -1,4 +1,4 @@
-import type { Api, ApiResponse } from '../Api'
+import type { Api, ApiRequestConfig, ApiResponse } from '../Api'
 
 export type MediaSource = 'youtube' | 'soundcloud'
 
@@ -93,7 +93,7 @@ export interface PlaylistResource {
   rename(playlistId: number, name: string): Promise<ApiResponse<PlaylistResponse>>
   remove(playlistId: number): Promise<ApiResponse<{ success: boolean }>>
   activate(playlistId: number): Promise<ApiResponse<PlaylistResponse>>
-  shuffle(playlistId: number): Promise<ApiResponse<ShuffleResponse>>
+  shuffle(playlistId: number, config?: ApiRequestConfig): Promise<ApiResponse<ShuffleResponse>>
   addItem(playlistId: number, data: AddMediaData): Promise<ApiResponse<MediaItemResponse>>
   removeItem(playlistId: number, itemId: number): Promise<ApiResponse<{ success: boolean }>>
   moveItem(playlistId: number, itemId: number, position: number): Promise<ApiResponse<MediaItemResponse>>
@@ -110,7 +110,7 @@ export const createPlaylistResource = (api: Api): PlaylistResource => ({
   rename: (playlistId, name) => api.patch<PlaylistResponse>(`${endpoint}/${playlistId}`, { name }),
   remove: (playlistId) => api.delete<{ success: boolean }>(`${endpoint}/${playlistId}`),
   activate: (playlistId) => api.post<PlaylistResponse>(`${endpoint}/${playlistId}/activate`),
-  shuffle: (playlistId) => api.post<ShuffleResponse>(`${endpoint}/${playlistId}/shuffle`),
+  shuffle: (playlistId, config) => api.post<ShuffleResponse>(`${endpoint}/${playlistId}/shuffle`, undefined, config),
   addItem: (playlistId, data) => api.post<MediaItemResponse>(`${endpoint}/${playlistId}/items`, data),
   removeItem: (playlistId, itemId) => api.delete<{ success: boolean }>(`${endpoint}/${playlistId}/items/${itemId}`),
   moveItem: (playlistId, itemId, position) => api.patch<MediaItemResponse>(`${endpoint}/${playlistId}/items/${itemId}/move`, { position }),
