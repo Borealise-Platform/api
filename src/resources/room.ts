@@ -22,8 +22,6 @@ export interface Room {
   waitlistCycleEnabled: boolean
   mode: RoomMode
   directMediaUrl?: string | null
-  watchTogetherUrl?: string | null
-  watchTogetherTitle?: string | null
   watchTogetherTwitchChannel?: string | null
   population: number
   totalPlays: number
@@ -78,8 +76,6 @@ export interface CreateRoomData {
   chatFilterTerms?: string[]
   mode?: RoomMode
   directMediaUrl?: string
-  watchTogetherUrl?: string
-  watchTogetherTitle?: string
   watchTogetherTwitchChannel?: string
 }
 
@@ -99,16 +95,10 @@ export interface UpdateRoomData {
   waitlistCycleEnabled?: boolean
   mode?: RoomMode
   directMediaUrl?: string
-  watchTogetherUrl?: string
-  watchTogetherTitle?: string
   watchTogetherTwitchChannel?: string
 }
 
 export interface WatchTogetherState {
-  url: string
-  title: string
-  twitchChannel: string | null
-  duration: number
   elapsed: number
   paused: boolean
   startedAt: number | null
@@ -533,8 +523,6 @@ export interface RoomResource {
   getHistory(slug: string, page?: number, limit?: number): Promise<ApiResponse<RoomHistoryResponse>>
   getAuditLog(slug: string, limit?: number, before?: string): Promise<ApiResponse<RoomAuditLogResponse>>
   activity(limit?: number): Promise<ApiResponse<DashboardActivityResponse>>
-  getWatchTogether(slug: string): Promise<ApiResponse<WatchTogetherResponse>>
-  setWatchTogether(slug: string, data: { url: string; title?: string; twitchChannel?: string }): Promise<ApiResponse<WatchTogetherResponse>>
   seekWatchTogether(slug: string, position: number): Promise<ApiResponse<{ success: boolean }>>
   pauseWatchTogether(slug: string): Promise<ApiResponse<{ success: boolean }>>
   resumeWatchTogether(slug: string): Promise<ApiResponse<{ success: boolean }>>
@@ -607,8 +595,6 @@ export const createRoomResource = (api: Api): RoomResource => ({
   getHistory: (slug, page = 1, limit = 20) => api.get<RoomHistoryResponse>(`${endpoint}/${slug}/history`, { params: { page, limit } }),
   getAuditLog: (slug, limit = 50, before) => api.get<RoomAuditLogResponse>(`${endpoint}/${slug}/audit`, { params: before ? { limit, before } : { limit } }),
   activity: (limit = 12) => api.get<DashboardActivityResponse>(`${endpoint}/activity`, { params: { limit } }),
-  getWatchTogether: (slug) => api.get<WatchTogetherResponse>(`${endpoint}/${slug}/watch-together`),
-  setWatchTogether: (slug, data) => api.post<WatchTogetherResponse>(`${endpoint}/${slug}/watch-together`, data),
   seekWatchTogether: (slug, position) => api.post<{ success: boolean }>(`${endpoint}/${slug}/watch-together/seek`, { position }),
   pauseWatchTogether: (slug) => api.post<{ success: boolean }>(`${endpoint}/${slug}/watch-together/pause`),
   resumeWatchTogether: (slug) => api.post<{ success: boolean }>(`${endpoint}/${slug}/watch-together/resume`),
