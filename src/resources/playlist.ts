@@ -1,6 +1,6 @@
 import type { Api, ApiRequestConfig, ApiResponse } from '../Api'
 
-export type MediaSource = 'youtube' | 'soundcloud'
+export type MediaSource = 'youtube' | 'soundcloud' | 'mp4' | 'hls'
 
 export interface MediaItem {
   id: number
@@ -53,6 +53,7 @@ export interface MediaItemResponse {
 export interface AddMediaData {
   source: MediaSource
   sourceId: string
+  title?: string
 }
 
 export interface ShuffleResponse {
