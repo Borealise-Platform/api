@@ -299,6 +299,12 @@ export interface RoomLiveStartResponse {
   }
 }
 
+export interface JoinWatchTogetherSnapshot {
+  paused: boolean
+  elapsed: number
+  started_at: number | null
+}
+
 export interface JoinRoomResponse {
   success: boolean
   data: {
@@ -314,6 +320,7 @@ export interface JoinRoomResponse {
     users: RoomUserState[]
     booth: BoothState
     mute: JoinMuteInfo | null
+    watchTogether: JoinWatchTogetherSnapshot | null
   }
 }
 
