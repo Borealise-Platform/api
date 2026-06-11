@@ -20,6 +20,7 @@ export interface Room {
   chatFilterTerms: string[] | null
   waitlistLocked: boolean
   waitlistCycleEnabled: boolean
+  hideHeader: boolean
   mode: RoomMode
   directMediaUrl?: string | null
   watchTogetherTwitchChannel?: string | null
@@ -93,6 +94,7 @@ export interface UpdateRoomData {
   chatFilterTerms?: string[]
   waitlistLocked?: boolean
   waitlistCycleEnabled?: boolean
+  hideHeader?: boolean
   mode?: RoomMode
   directMediaUrl?: string
   watchTogetherTwitchChannel?: string
