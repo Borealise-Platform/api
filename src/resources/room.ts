@@ -301,12 +301,6 @@ export interface RoomLiveStartResponse {
   }
 }
 
-export interface JoinWatchTogetherSnapshot {
-  paused: boolean
-  elapsed: number
-  started_at: number | null
-}
-
 export interface JoinRoomResponse {
   success: boolean
   data: {
@@ -322,7 +316,7 @@ export interface JoinRoomResponse {
     users: RoomUserState[]
     booth: BoothState
     mute: JoinMuteInfo | null
-    watchTogether: JoinWatchTogetherSnapshot | null
+    watchTogether: null
   }
 }
 
@@ -532,9 +526,6 @@ export interface RoomResource {
   getHistory(slug: string, page?: number, limit?: number): Promise<ApiResponse<RoomHistoryResponse>>
   getAuditLog(slug: string, limit?: number, before?: string): Promise<ApiResponse<RoomAuditLogResponse>>
   activity(limit?: number): Promise<ApiResponse<DashboardActivityResponse>>
-  seekWatchTogether(slug: string, position: number): Promise<ApiResponse<{ success: boolean }>>
-  pauseWatchTogether(slug: string): Promise<ApiResponse<{ success: boolean }>>
-  resumeWatchTogether(slug: string): Promise<ApiResponse<{ success: boolean }>>
 }
 
 const endpoint = '/rooms' as const
@@ -604,9 +595,6 @@ export const createRoomResource = (api: Api): RoomResource => ({
   getHistory: (slug, page = 1, limit = 20) => api.get<RoomHistoryResponse>(`${endpoint}/${slug}/history`, { params: { page, limit } }),
   getAuditLog: (slug, limit = 50, before) => api.get<RoomAuditLogResponse>(`${endpoint}/${slug}/audit`, { params: before ? { limit, before } : { limit } }),
   activity: (limit = 12) => api.get<DashboardActivityResponse>(`${endpoint}/activity`, { params: { limit } }),
-  seekWatchTogether: (slug, position) => api.post<{ success: boolean }>(`${endpoint}/${slug}/watch-together/seek`, { position }),
-  pauseWatchTogether: (slug) => api.post<{ success: boolean }>(`${endpoint}/${slug}/watch-together/pause`),
-  resumeWatchTogether: (slug) => api.post<{ success: boolean }>(`${endpoint}/${slug}/watch-together/resume`),
 })
 
 export default createRoomResource
