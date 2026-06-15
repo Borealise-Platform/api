@@ -15,6 +15,7 @@ export interface PublicUser {
   globalRole: string
   xp: number
   level: number
+  isPartner?: boolean
   subscriptionType?: string | null
   subscriptionMonths?: number | null
   currentRoomSlug?: string | null
