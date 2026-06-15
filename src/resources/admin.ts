@@ -1,5 +1,6 @@
 import type { Api, ApiResponse } from '../Api'
 import type { GlobalRole } from './user'
+import type { CdnFile, CdnFileStatus } from './cdn'
 
 export interface AdminUserEntry {
   id: number
@@ -88,6 +89,40 @@ export interface AddViolationResponse {
   }
 }
 
+export interface AdminPartnerEntry {
+  id: number
+  username: string
+  displayName: string | null
+  avatarId: string
+  email?: string
+  isPartner: boolean
+  hasApiKey: boolean
+}
+
+export interface AdminPartnerResponse {
+  success: boolean
+  data: {
+    partners: AdminPartnerEntry[]
+  }
+}
+
+export interface AdminGrantPartnerResponse {
+  success: boolean
+  data: {
+    apiKey: string
+  }
+}
+
+export interface AdminPartnerFilesResponse {
+  success: boolean
+  data: {
+    files: CdnFile[]
+    total: number
+    page: number
+    limit: number
+  }
+}
+
 export interface AdminResource {
   listUsers(params?: AdminListUsersParams): Promise<ApiResponse<AdminUsersResponse>>
   enableUser(id: number): Promise<ApiResponse<{ success: boolean; data: null }>>
@@ -99,6 +134,13 @@ export interface AdminResource {
   addViolation(userId: number, reason: string): Promise<ApiResponse<AddViolationResponse>>
   revokeViolation(violationId: number): Promise<ApiResponse<{ success: boolean; data: null }>>
   getUserViolations(userId: number): Promise<ApiResponse<UserViolationsResponse>>
+  // CDN / partner management
+  listPartners(): Promise<ApiResponse<AdminPartnerResponse>>
+  grantPartner(userId: number): Promise<ApiResponse<AdminGrantPartnerResponse>>
+  revokePartner(userId: number, purgeFiles?: boolean): Promise<ApiResponse<{ success: boolean; data: null }>>
+  rotatePartnerKey(userId: number): Promise<ApiResponse<AdminGrantPartnerResponse>>
+  listPartnerFiles(userId: number, params?: { page?: number; limit?: number }): Promise<ApiResponse<AdminPartnerFilesResponse>>
+  deleteCdnFile(fileId: string): Promise<ApiResponse<{ success: boolean; data: null }>>
 }
 
 const endpoint = '/admin' as const
@@ -129,6 +171,23 @@ export const createAdminResource = (api: Api): AdminResource => ({
     api.delete<{ success: boolean; data: null }>(`${endpoint}/violations/${violationId}`),
   getUserViolations: (userId) =>
     api.get<UserViolationsResponse>(`${endpoint}/users/${userId}/violations`),
+  listPartners: () =>
+    api.get<AdminPartnerResponse>(`${endpoint}/partners`),
+  grantPartner: (userId) =>
+    api.post<AdminGrantPartnerResponse>(`${endpoint}/partners/${userId}`),
+  revokePartner: (userId, purgeFiles = false) =>
+    api.delete<{ success: boolean; data: null }>(`${endpoint}/partners/${userId}?purgeFiles=${purgeFiles}`),
+  rotatePartnerKey: (userId) =>
+    api.post<AdminGrantPartnerResponse>(`${endpoint}/partners/${userId}/rotate-key`),
+  listPartnerFiles: (userId, params = {}) => {
+    const query = new URLSearchParams()
+    if (params.page) query.set('page', String(params.page))
+    if (params.limit) query.set('limit', String(params.limit))
+    const qs = query.toString()
+    return api.get<AdminPartnerFilesResponse>(`${endpoint}/partners/${userId}/files${qs ? `?${qs}` : ''}`)
+  },
+  deleteCdnFile: (fileId) =>
+    api.delete<{ success: boolean; data: null }>(`${endpoint}/cdn/files/${fileId}`),
 })
 
 export default createAdminResource

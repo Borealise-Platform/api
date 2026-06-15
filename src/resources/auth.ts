@@ -11,6 +11,7 @@ export interface AuthUser {
   xp: number
   level: number
   flags?: number | null
+  isPartner?: boolean
   subscriptionType?: string | null
   subscriptionMonths?: number
   subscriptionExpiresAt?: string | null
