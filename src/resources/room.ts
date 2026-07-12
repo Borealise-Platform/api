@@ -240,10 +240,19 @@ export interface BoothMedia {
   trimEnd?: number | null
 }
 
+export interface WaitlistUpNextTrack {
+  title: string
+  artist: string | null
+  thumbnail: string | null
+  duration: number
+}
+
 export interface WaitlistUser {
   id: number
   username: string
   displayName: string | null
+  /** Only populated for host/co-host viewers. */
+  upNext?: WaitlistUpNextTrack
 }
 
 export interface BoothState {
