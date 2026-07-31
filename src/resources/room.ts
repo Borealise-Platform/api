@@ -9,6 +9,7 @@ export interface Room {
   name: string
   description: string | null
   welcomeMessage: string | null
+  rules: string | null
   genreTags: string[] | null
   moodTag: string | null
   stageBackground: string
@@ -68,6 +69,7 @@ export interface CreateRoomData {
   name: string
   description?: string
   welcomeMessage?: string
+  rules?: string
   genreTags?: string[]
   moodTag?: string
   stageBackground?: string
@@ -84,6 +86,7 @@ export interface UpdateRoomData {
   name?: string
   description?: string
   welcomeMessage?: string
+  rules?: string
   genreTags?: string[]
   moodTag?: string
   stageBackground?: string
