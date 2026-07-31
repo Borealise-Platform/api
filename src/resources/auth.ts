@@ -109,6 +109,7 @@ export interface AuthResource {
   me(): Promise<ApiResponse<MeResponse>>
   forgotPassword(email: string): Promise<ApiResponse<{ success: boolean }>>
   resetPassword(token: string, password: string): Promise<ApiResponse<{ success: boolean }>>
+  changePassword(currentPassword: string, newPassword: string): Promise<ApiResponse<{ success: boolean }>>
   getTwoFactorStatus(): Promise<ApiResponse<TwoFactorStatusResponse>>
   startTwoFactorSetup(method: 'totp' | 'email'): Promise<ApiResponse<TwoFactorSetupResponse>>
   verifyTwoFactorSetup(challengeToken: string, code: string): Promise<ApiResponse<TwoFactorSetupVerifyResponse>>
@@ -126,6 +127,7 @@ export const createAuthResource = (api: Api): AuthResource => ({
   me: () => api.get<MeResponse>(`${endpoint}/me`),
   forgotPassword: (email) => api.post<{ success: boolean }>(`${endpoint}/forgot-password`, { email }),
   resetPassword: (token, password) => api.post<{ success: boolean }>(`${endpoint}/reset-password`, { token, password }),
+  changePassword: (currentPassword, newPassword) => api.post<{ success: boolean }>(`${endpoint}/change-password`, { currentPassword, newPassword }),
   getTwoFactorStatus: () => api.get<TwoFactorStatusResponse>(`${endpoint}/2fa/status`),
   startTwoFactorSetup: (method) => api.post<TwoFactorSetupResponse>(`${endpoint}/2fa/setup`, { method }),
   verifyTwoFactorSetup: (challengeToken, code) => api.post<TwoFactorSetupVerifyResponse>(`${endpoint}/2fa/setup/verify`, { challengeToken, code }),
