@@ -441,7 +441,7 @@ export interface RoomHistoryResponse {
   }
 }
 
-export type AuditAction = 'kick' | 'ban' | 'unban' | 'mute' | 'unmute' | 'role_change' | 'waitlist_move' | 'waitlist_remove' | 'track_skip'
+export type AuditAction = 'kick' | 'ban' | 'unban' | 'mute' | 'unmute' | 'role_change' | 'waitlist_move' | 'waitlist_remove' | 'track_skip' | 'host_transfer'
 
 export interface RoomAuditLog {
   id: number
@@ -503,6 +503,7 @@ export interface RoomResource {
   getBans(slug: string): Promise<ApiResponse<RoomBansResponse>>
   getMutes(slug: string): Promise<ApiResponse<RoomMutesResponse>>
   updateUserRole(slug: string, userId: number, role: RoomRole): Promise<ApiResponse<{ success: boolean; data: { userId: number; role: RoomRole } }>>
+  transferHost(slug: string, userId: number): Promise<ApiResponse<{ success: boolean; data: { userId: number; role: RoomRole } }>>
   ban(slug: string, userId: number, data?: ModerateUserData): Promise<ApiResponse<BanResponse>>
   unban(slug: string, userId: number): Promise<ApiResponse<{ success: boolean; data: { userId: number } }>>
   mute(slug: string, userId: number, data?: ModerateUserData): Promise<ApiResponse<MuteResponse>>
@@ -552,6 +553,9 @@ export const createRoomResource = (api: Api): RoomResource => ({
   getMutes: (slug) => api.get<RoomMutesResponse>(`${endpoint}/${slug}/mutes`),
   updateUserRole: (slug, userId, role) => api.patch<{ success: boolean; data: { userId: number; role: RoomRole } }>(
     `${endpoint}/${slug}/users/${userId}/role`, { role }
+  ),
+  transferHost: (slug, userId) => api.post<{ success: boolean; data: { userId: number; role: RoomRole } }>(
+    `${endpoint}/${slug}/users/${userId}/transfer-host`
   ),
   ban: (slug, userId, data) => api.post<BanResponse>(`${endpoint}/${slug}/users/${userId}/ban`, data || {}),
   unban: (slug, userId) => api.delete<{ success: boolean; data: { userId: number } }>(`${endpoint}/${slug}/users/${userId}/ban`),
